@@ -2,6 +2,11 @@ import requests
 import time
 import math
 import json
+from dotenv import load_dotenv
+import os
+
+# Load the .env files
+load_dotenv()
 
 """
     Candidate Name : Simiao Salvador da Gama
@@ -114,7 +119,7 @@ def main():
 
 if __name__ == "__main__":
     # Free API Key that I created from openweathermap.org website
-    API_KEY = 'a93e65ffe17782e4215c99964629cca7'
+    API_KEY = os.getenv("OPENWEATHERMAP_API_KEY")
     # Please input the City or Location name that we want
     CITY = input("Please Enter The City or Location Name : ")
     main()
