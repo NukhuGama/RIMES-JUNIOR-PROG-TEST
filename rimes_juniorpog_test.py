@@ -24,11 +24,14 @@ def find_heat_index(temperature, r_humidity):
     T = (T*(1.8)) + 32 # Convert Celsius to Fahrenheit
 
     # Step 1: Simple formula for HI if condition is met
-    if T<80 :
+    HI = 0.5 * (T + 61.0 + ((T - 68.0) * 1.2) + (RH * 0.094))
+    HI = (HI+T)/2
+    
+    if HI<80 :
         HI = 0.5 * (T + 61.0 + ((T - 68.0) * 1.2) + (RH * 0.094))
 
     # Step 2: Calculate HI using the Rothfusz regression equation
-    elif T>=80:
+    elif HI>=80:
         HI = (-42.379 
             + 2.04901523 * T 
             + 10.14333127 * RH 
@@ -40,10 +43,10 @@ def find_heat_index(temperature, r_humidity):
             - 0.00000199 * T**2 * RH**2)
         
         # Step 3: Adjustments based on RH
-        if RH < 13 and 80 <= T <= 112:
+        if RH < 13 and 80 < T < 112:
             adjustment = ((13 - RH) / 4) * math.sqrt((17 - abs(T - 95)) / 17)
             HI -= adjustment
-        elif RH > 85 and 80 <= T <= 87:
+        elif RH > 85 and 80 < T < 87:
             adjustment = ((RH - 85) / 10) * ((87 - T) / 5)
             HI += adjustment
 
@@ -74,6 +77,7 @@ def fetch_weather_data():
 
         # Now fetch the weather data using the coordinates
         weather_url = f'https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={API_KEY}&units=metric'
+
         weather_response = requests.get(weather_url)
         weather_response.raise_for_status()  # Raise an error for bad responses
         weather_data = weather_response.json()
@@ -102,7 +106,7 @@ def main():
         print("Description of Temperature, Humidity and Heat Index in ", CITY, "city")
         print("=====================================================================")
         temperature, humidity = fetch_weather_data()
-        # temperature, humidity = 85,12
+        # temperature, humidity = 32.04 , 37
         
         if temperature is not None and humidity is not None:
             heat_index = find_heat_index(temperature, humidity)
